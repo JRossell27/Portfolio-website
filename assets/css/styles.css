@@ -194,33 +194,66 @@ a:hover { text-decoration: underline; }
   .grid.horizontal::-webkit-scrollbar { height: 8px; }
   
 
-  /* Horizontal edge fades for "All" scroller */
+ /* Two-row horizontal mode stays as you have it */
 .grid.horizontal {
-    position: relative;
-    --fade-color: #fff; /* change to #f7f7f8 if your section bg is light gray */
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--col-width, 360px);
+    grid-template-rows: repeat(2, auto);
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .grid.horizontal .card {
+    grid-column: auto;
+    width: var(--col-width, 360px);
+    scroll-snap-align: start;
   }
   
-  .grid.horizontal::before,
-  .grid.horizontal::after {
+  /* Sticky edge fades live on a non-scrolling wrapper */
+  .hscroll { position: relative; }
+  
+  /* Set fade color to match your section background: #fff or #f7f7f8 */
+  .hscroll {
+    --fade-color: #fff;
+    --fade-w: 140px;      /* make this bigger if you want a longer gradient */
+  }
+  .hscroll::before,
+  .hscroll::after {
     content: "";
     position: absolute;
     top: 0; bottom: 0;
-    width: 64px;
-    pointer-events: none;   /* don't block clicks */
+    width: var(--fade-w);
+    pointer-events: none;
     opacity: 0;
     transition: opacity .2s ease;
+    z-index: 2;
   }
-  
-  .grid.horizontal::before {
+  .hscroll::before {
     left: 0;
     background: linear-gradient(to right, var(--fade-color), rgba(255,255,255,0));
   }
-  
-  .grid.horizontal::after {
+  .hscroll::after {
     right: 0;
     background: linear-gradient(to left, var(--fade-color), rgba(255,255,255,0));
   }
+  .hscroll.show-left-fade::before  { opacity: 1; }
+  .hscroll.show-right-fade::after  { opacity: 1; }
   
-  .grid.horizontal.show-left-fade::before { opacity: 1; }
-  .grid.horizontal.show-right-fade::after { opacity: 1; }
+  /* Small screens fall back to vertical */
+  @media (max-width: 639.98px) {
+    .grid.horizontal {
+      grid-auto-flow: row;
+      overflow-x: visible;
+      scroll-snap-type: none;
+    }
+    .grid.horizontal .card {
+      width: auto;
+      grid-column: span 12;
+    }
+  }
+  
   
