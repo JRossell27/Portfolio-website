@@ -42,26 +42,36 @@ function closeModal() {
 }
 
 // Open from any element with .open-modal
+// Open and close already defined above: openModal(id), closeModal()
+
 document.addEventListener('click', e => {
+  // Open from any .open-modal
   const opener = e.target.closest('.open-modal');
   if (opener && opener.dataset.vimeo) {
     openModal(opener.dataset.vimeo);
     return;
   }
 
-  // Close if clicking backdrop, close button, or anywhere outside the dialog
+  // When modal is open, close on:
+  //  - backdrop click
+  //  - X button click
+  //  - any click not inside the .video-responsive area
   if (modal.getAttribute('aria-hidden') === 'false') {
     const clickedBackdrop = e.target.hasAttribute('data-close');
-    const clickedOutsideDialog = !e.target.closest('.modal-dialog');
-    if (clickedBackdrop || clickedOutsideDialog) closeModal();
+    const clickedCloseBtn = e.target.closest('.modal-close');
+    const insideVideo = !!e.target.closest('.video-responsive');
+    if (clickedBackdrop || clickedCloseBtn || !insideVideo) {
+      closeModal();
+    }
   }
 });
 
-// Close on Esc
+// Esc still closes
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
     closeModal();
   }
 });
+
 
 
