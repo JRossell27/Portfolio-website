@@ -378,3 +378,10 @@ a:hover { text-decoration: underline; }
 
 /* Make the edge fades match black */
 #work .hscroll { --fade-rgb: 0,0,0; }
+
+
+/* Fix titles and body text inside white cards on black section */
+#work .card { background: #fff; }
+#work .card-body { color: #111; }
+#work .card-title { color: #111; }
+#work .card-meta { color: #666; } /* keep the lighter meta */
