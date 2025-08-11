@@ -27,7 +27,6 @@ applyFilter('all');
 // Modal video player
 // ===== Modal open and close helpers =====
 const modal = document.getElementById('videoModal');
-const dialog = modal.querySelector('.modal-dialog');
 const modalPlayer = document.getElementById('modalPlayer');
 
 function openModal(id) {
@@ -37,12 +36,12 @@ function openModal(id) {
 }
 
 function closeModal() {
-  modalPlayer.src = ''; // stop playback
+  modalPlayer.src = ''; // stops playback
   modal.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
 }
 
-// Open on any element with .open-modal
+// Open from any element with .open-modal
 document.addEventListener('click', e => {
   const opener = e.target.closest('.open-modal');
   if (opener && opener.dataset.vimeo) {
@@ -50,17 +49,11 @@ document.addEventListener('click', e => {
     return;
   }
 
-  // Close if:
-  // - click on [data-close] backdrop
-  // - click on the X button
-  // - click anywhere that is not inside the modal dialog
+  // Close if clicking backdrop, close button, or anywhere outside the dialog
   if (modal.getAttribute('aria-hidden') === 'false') {
     const clickedBackdrop = e.target.hasAttribute('data-close');
-    const clickedCloseBtn = e.target.classList.contains('modal-close');
     const clickedOutsideDialog = !e.target.closest('.modal-dialog');
-    if (clickedBackdrop || clickedCloseBtn || clickedOutsideDialog) {
-      closeModal();
-    }
+    if (clickedBackdrop || clickedOutsideDialog) closeModal();
   }
 });
 
@@ -70,4 +63,5 @@ document.addEventListener('keydown', e => {
     closeModal();
   }
 });
+
 

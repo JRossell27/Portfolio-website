@@ -81,3 +81,6 @@ a:hover { text-decoration: underline; }
   outline-offset: 2px;
 }
 .modal-backdrop { cursor: pointer; }
+.modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 9999; }
+.modal[aria-hidden="false"] { display: flex; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.6); cursor: pointer; }
