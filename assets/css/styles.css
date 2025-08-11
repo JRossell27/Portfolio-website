@@ -156,3 +156,37 @@ a:hover { text-decoration: underline; }
 #reel { display: none !important; }
 .nav a[href="#reel"] { display: none !important; } /* optional */
 
+/* 2-row horizontal scroller when 'All' is selected */
+.grid.horizontal {
+    display: grid;
+    grid-auto-flow: column;          /* fill rows, then advance columns */
+    grid-auto-columns: 320px;        /* card width per column */
+    grid-template-rows: repeat(2, auto);
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .grid.horizontal .card {
+    grid-column: auto;               /* override the span rules from the vertical grid */
+    scroll-snap-align: start;
+  }
+  
+  /* Keep vertical behavior on small screens */
+  @media (max-width: 768px) {
+    .grid.horizontal {
+      grid-auto-flow: row;
+      overflow-x: visible;
+      scroll-snap-type: none;
+    }
+    .grid.horizontal .card {
+      grid-column: span 12;
+    }
+  }
+  
+  /* Optional: slimmer horizontal scrollbar */
+  .grid.horizontal::-webkit-scrollbar { height: 8px; }
+  
