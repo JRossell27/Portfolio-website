@@ -156,36 +156,39 @@ a:hover { text-decoration: underline; }
 #reel { display: none !important; }
 .nav a[href="#reel"] { display: none !important; } /* optional */
 
-/* 2-row horizontal scroller when 'All' is selected */
+/* Two-row horizontal scroller for "All" while keeping card size */
 .grid.horizontal {
     display: grid;
-    grid-auto-flow: column;          /* fill rows, then advance columns */
-    grid-auto-columns: 320px;        /* card width per column */
+    grid-auto-flow: column;                 /* fill rows first, then new column */
+    grid-auto-columns: var(--col-width, 360px);
     grid-template-rows: repeat(2, auto);
     gap: 16px;
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 8px;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
   }
   
   .grid.horizontal .card {
-    grid-column: auto;               /* override the span rules from the vertical grid */
+    grid-column: auto;                      /* ignore span rules from vertical layout */
+    width: var(--col-width, 360px);         /* match computed width from JS */
     scroll-snap-align: start;
   }
   
-  /* Keep vertical behavior on small screens */
-  @media (max-width: 768px) {
+  /* Small screens fall back to normal vertical grid */
+  @media (max-width: 639.98px) {
     .grid.horizontal {
       grid-auto-flow: row;
       overflow-x: visible;
       scroll-snap-type: none;
     }
     .grid.horizontal .card {
+      width: auto;
       grid-column: span 12;
     }
   }
+  
   
   /* Optional: slimmer horizontal scrollbar */
   .grid.horizontal::-webkit-scrollbar { height: 8px; }

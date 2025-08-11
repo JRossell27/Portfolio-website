@@ -6,12 +6,64 @@ const btns = document.querySelectorAll('.filter-btn');
 const grid = document.getElementById('projectGrid');
 const emptyNote = document.getElementById('emptyNote');
 
+const ORDER = [
+  'Social Media Videos',
+  'Interviews',
+  'Shot On iPhone',
+  'MLB Network',
+  'Weddings'
+];
+const PRI = Object.fromEntries(ORDER.map((name, i) => [name, i]));
+
+function sortAllByCategory() {
+  const cards = Array.from(grid.querySelectorAll('.card'));
+  cards.sort((a, b) => {
+    const pa = PRI[a.dataset.category] ?? 999;
+    const pb = PRI[b.dataset.category] ?? 999;
+    return pa - pb;
+  });
+  // Re-append in new order (stable relative order within each category)
+  cards.forEach(c => grid.appendChild(c));
+}
+
+function updateHorizontalSizing(isAll) {
+  if (!isAll) {
+    grid.classList.remove('horizontal');
+    grid.style.removeProperty('--col-width');
+    return;
+  }
+  // Turn on horizontal mode
+  grid.classList.add('horizontal');
+
+  // Match your existing vertical sizes:
+  // >=960px: 3 columns, >=640px: 2 columns, else: 1 column (falls back to vertical)
+  const vw = window.innerWidth;
+  const styles = getComputedStyle(grid);
+  const gap = parseInt(styles.gap, 10) || 16;
+
+  let columns;
+  if (vw >= 960) columns = 3;
+  else if (vw >= 640) columns = 2;
+  else columns = 1;
+
+  if (columns === 1) {
+    // Small screens: keep normal vertical flow
+    grid.classList.remove('horizontal');
+    grid.style.removeProperty('--col-width');
+    return;
+  }
+
+  // Compute column width to match the vertical grid at this breakpoint
+  const container = grid.getBoundingClientRect().width;
+  const colWidth = Math.floor((container - gap * (columns - 1)) / columns);
+  grid.style.setProperty('--col-width', `${colWidth}px`);
+}
+
 function applyFilter(filter) {
-  const cards = grid.querySelectorAll('.card');
+  const cards = Array.from(grid.querySelectorAll('.card'));
   const isAll = filter === 'all';
 
-  // Turn on 2-row horizontal scroller only for "All"
-  grid.classList.toggle('horizontal', isAll);
+  if (isAll) sortAllByCategory();
 
   let anyVisible = false;
   cards.forEach(card => {
@@ -21,6 +73,8 @@ function applyFilter(filter) {
   });
 
   emptyNote.style.display = cards.length ? (anyVisible ? 'none' : 'block') : 'block';
+
+  updateHorizontalSizing(isAll);
 }
 
 // Filter button clicks
@@ -30,6 +84,13 @@ btns.forEach(btn => {
     btn.classList.add('active');
     applyFilter(btn.dataset.filter);
   });
+});
+
+// Recompute sizes on resize
+window.addEventListener('resize', () => {
+  const activeBtn = document.querySelector('.filter-btn.active');
+  const current = activeBtn ? activeBtn.dataset.filter : 'all';
+  updateHorizontalSizing(current === 'all');
 });
 
 // Initial render
