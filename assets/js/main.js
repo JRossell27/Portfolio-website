@@ -1,12 +1,13 @@
-// Year
+// ========= Year =========
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Filters + full-bleed horizontal scroller + category sort + sticky fades
+// ========= Filters + full-bleed horizontal scroller + category sort + sticky fades =========
 const btns = document.querySelectorAll('.filter-btn');
 const grid = document.getElementById('projectGrid');
 const hscroll = grid.parentElement; // .hscroll wrapper
 const emptyNote = document.getElementById('emptyNote');
 
+// Desired category order for "All"
 const ORDER = [
   'Social Media Videos',
   'Interviews',
@@ -17,13 +18,17 @@ const ORDER = [
 const ORDER_LOWER = ORDER.map(s => s.toLowerCase().trim());
 const norm = s => (s || '').toLowerCase().trim();
 
+// How much of the next card to show (0.5 = half)
+const PEEK = 0.5;
+
 function sortAllByCategory() {
   const cards = Array.from(grid.querySelectorAll('.card'));
   const buckets = new Map(ORDER_LOWER.map(k => [k, []]));
   const misc = [];
   cards.forEach(c => {
     const cat = norm(c.dataset.category);
-    if (buckets.has(cat)) buckets.get(cat).push(c); else misc.push(c);
+    if (buckets.has(cat)) buckets.get(cat).push(c);
+    else misc.push(c);
   });
   const frag = document.createDocumentFragment();
   ORDER_LOWER.forEach(k => buckets.get(k).forEach(c => frag.appendChild(c)));
@@ -32,8 +37,9 @@ function sortAllByCategory() {
 }
 
 function setHorizontalLayout(filter) {
-  // Turn on horizontal for All and for every category on >=640px
   const vw = window.innerWidth;
+
+  // Small screens: vertical list
   if (vw < 640) {
     grid.classList.remove('horizontal', 'one-row');
     grid.style.removeProperty('--col-width');
@@ -41,17 +47,26 @@ function setHorizontalLayout(filter) {
     return;
   }
 
+  // Horizontal on >=640px. All = 2 rows, others = 1 row
   grid.classList.add('horizontal');
-  grid.classList.toggle('one-row', filter !== 'all'); // All = 2 rows, others = 1 row
+  grid.classList.toggle('one-row', filter !== 'all');
 
-  // Match your vertical card width at breakpoints (2-up on tablet, 3-up on desktop)
+  // Match your vertical layout: desktop=3 columns, tablet=2 columns
+  const columnsFull = (vw >= 960) ? 3 : 2;
+
+  // Compute card width so we show N full cards + a PEEK of the next
   const styles = getComputedStyle(grid);
   const gap = parseInt(styles.gap, 10) || 16;
   const containerW = grid.getBoundingClientRect().width;
-  const columns = (vw >= 960) ? 3 : 2;
-  const colW = Math.floor((containerW - gap * (columns - 1)) / columns);
+
+  // containerW = (N + PEEK) * colW + (N - 1) * gap  => solve for colW
+  const colW = Math.floor(
+    (containerW - (columnsFull - 1) * gap) / (columnsFull + PEEK)
+  );
+
   grid.style.setProperty('--col-width', `${colW}px`);
 
+  // refresh fades
   requestAnimationFrame(updateScrollFades);
 }
 
@@ -72,7 +87,7 @@ function applyFilter(filter) {
   setHorizontalLayout(filter);
 }
 
-// Sticky fade logic (on wrapper; reads grid’s scroll)
+// Sticky fades on the wrapper; read the grid’s scroll state
 function updateScrollFades() {
   const canScroll = grid.scrollWidth > grid.clientWidth + 1;
   const atStart = grid.scrollLeft <= 1;
@@ -101,7 +116,7 @@ window.addEventListener('resize', () => {
 applyFilter('all');
 requestAnimationFrame(updateScrollFades);
 
-// ===== Modal open/close =====
+// ========= Modal open/close =========
 const modal = document.getElementById('videoModal');
 const modalPlayer = document.getElementById('modalPlayer');
 
