@@ -155,3 +155,10 @@ a:hover { text-decoration: underline; }
 
 #reel { display: none !important; }
 .nav a[href="#reel"] { display: none !important; } /* optional */
+
+/* More side space so portrait videos are easy to close */
+@media (min-width: 900px) {
+    .modal-dialog { padding-left: 10vw; padding-right: 10vw; }
+    .video-responsive { width: min(60vw, 900px); margin: 0 auto; }
+  }
+  
