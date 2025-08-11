@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jason Rossell – Résumé</title>
+  <meta name="description" content="Résumé for Jason Rossell — Social Media Manager & Video Editor." />
+  <style>
+    :root{
+      --ink:#0b0b0c; --muted:#6b7280; --pill:#111; --bg:#ffffff; --line:#e5e7eb;
+      --link:#0a58ca; --accent:#1F4E79;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color:var(--ink); background:var(--bg); line-height:1.5;
+    }
+    a{color:var(--link); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .page{max-width:900px; margin:0 auto; padding:32px 20px 80px}
+    header{display:grid; gap:8px; align-items:end; margin-bottom:24px}
+    .name{font-size:36px; font-weight:800; letter-spacing:.3px; margin:0}
+    .sub{color:var(--muted); margin:0}
+    .contact{display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; color:var(--muted)}
+    .pill{display:inline-block; padding:4px 10px; border-radius:999px; background:#f3f4f6; font-size:12px}
+    .section{margin:28px 0}
+    .section h2{font-size:14px; letter-spacing:.2em; margin:0 0 12px; color:#fff;
+      background:var(--accent); display:inline-block; padding:6px 10px; border-radius:6px;}
+    .card{margin:14px 0 0; border-top:1px solid var(--line); padding-top:14px}
+    .role{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+    .role h3{margin:0; font-size:16px}
+    .role .when{color:var(--muted); font-size:14px}
+    ul{margin:8px 0 0 18px; padding:0}
+    li{margin:6px 0}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .muted{color:var(--muted)}
+    footer{margin-top:36px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:14px}
+    @media print{
+      a{text-decoration:none; color:inherit}
+      .pill{background:transparent; border:1px solid #999}
+      .page{padding:0}
+      body{background:#fff}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1 class="name">Jason Rossell</h1>
+      <p class="sub">Creative Social Media Manager &amp; Video Editor</p>
+      <p class="contact">
+        <span class="pill"><a href="mailto:jason.rossell9@gmail.com">jason.rossell9@gmail.com</a></span>
+        <span class="pill"><a href="https://www.linkedin.com/in/j-rossell/" target="_blank" rel="noopener">linkedin.com/in/j-rossell</a></span>
+        <span class="pill"><a href="https://www.jasonrossell.com" target="_blank" rel="noopener">jasonrossell.com</a></span>
+        <span class="pill">New York, NY</span>
+        <span class="pill">(973) 461-9966</span>
+      </p>
+    </header>
+
+    <section class="section">
+      <h2>SUMMARY</h2>
+      <p>
+        Proven success driving engagement, real-time content, and platform growth at high-profile brands like
+        PPV.COM and MLB Network. Passionate about building engaging content from scratch, analyzing performance,
+        and adapting to platform trends under tight deadlines while collaborating effectively across teams.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>CORE SKILLS</h2>
+      <div class="grid">
+        <ul>
+          <li>Video editing (Premiere Pro), motion (After Effects), graphics (Photoshop)</li>
+          <li>Vertical &amp; horizontal deliveries; platform-native storytelling</li>
+          <li>Social strategy, analytics, and growth</li>
+        </ul>
+        <ul>
+          <li>Campaign planning &amp; content calendars</li>
+          <li>On-site event coverage &amp; fast turnarounds</li>
+          <li>Client &amp; stakeholder communication</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>EXPERIENCE</h2>
+
+      <!-- Example role (duplicate/modify as needed) -->
+      <div class="card">
+        <div class="role">
+          <h3>PPV.COM — Social Media Manager / Video Editor</h3>
+          <div class="when">Dates</div>
+        </div>
+        <ul>
+          <li>Drove engagement through reels, shorts, and live event coverage.</li>
+          <li>Produced, shot, and edited content across boxing &amp; entertainment verticals.</li>
+          <li>Owned analytics &amp; iteration loop to scale what works.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="role">
+          <h3>MLB Network — Editor (Contract)</h3>
+          <div class="when">Dates</div>
+        </div>
+        <ul>
+          <li>Cut broadcast &amp; social packages highlighting league moments and storylines.</li>
+          <li>Delivered under tight turnarounds for on-air and digital publishing.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>SELECTED WORK</h2>
+      <p class="muted">See curated projects and reels on my site.</p>
+      <p><a href="/" class="pill" style="text-decoration:none">← Back to portfolio</a></p>
+    </section>
+
+    <footer>
+      © <span id="y"></span> Jason Rossell — References available upon request
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
