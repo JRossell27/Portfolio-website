@@ -72,3 +72,11 @@ a:hover { text-decoration: underline; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
 .modal-dialog { position: relative; z-index: 1; width: min(1100px, 92vw); }
 .modal-close { position: absolute; right: -8px; top: -44px; font-size: 28px; background: transparent; color: #fff; border: 0; cursor: pointer; }
+/* Make the whole card feel clickable */
+.card.open-modal { cursor: pointer; }
+
+/* Optional: visible keyboard focus when tabbing */
+.card.open-modal:focus-visible {
+  outline: 2px solid #0a58ca;
+  outline-offset: 2px;
+}
