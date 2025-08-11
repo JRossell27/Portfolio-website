@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jason Rossell • Portfolio</title>
+  <meta name="description" content="Social Media Manager, Video Editor, and Content Producer. Portfolio of selected work.">
+  <link rel="preconnect" href="https://player.vimeo.com">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body id="top">
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav">
+        <a class="brand" href="#top">JR</a>
+        <ul class="nav-links">
+          <li><a href="#reel">Reel</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="hero">
+        <h1>JASON ROSSELL</h1>
+        <p>Social Media Manager / Video Editor / Content Producer @ PPV.COM 🎥 Driving platform growth & engagement with innovative content 📈 Expert in video editing, campaign management & real-time event coverage.</p>
+        <a href="#work" class="btn">See work</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Reel -->
+    <section id="reel" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">Featured reel</h2>
+        <p class="section-kicker">Add your main reel by replacing REEL_VIDEO_ID below.</p>
+        <div class="video-responsive shadow">
+          <iframe src="https://player.vimeo.com/video/REEL_VIDEO_ID" title="Featured reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Work with category filters -->
+    <section id="work" class="section">
+      <div class="container">
+        <h2 class="section-title">Selected work</h2>
+        <div class="filters" role="tablist" aria-label="Filter projects by category">
+          <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-btn" data-filter="Social Media Videos" role="tab" aria-selected="false">Social Media Videos</button>
+          <button class="filter-btn" data-filter="Interviews" role="tab" aria-selected="false">Interviews</button>
+          <button class="filter-btn" data-filter="Shot On iPhone" role="tab" aria-selected="false">Shot On iPhone</button>
+          <button class="filter-btn" data-filter="MLB Network" role="tab" aria-selected="false">MLB Network</button>
+          <button class="filter-btn" data-filter="Weddings" role="tab" aria-selected="false">Weddings</button>
+        </div>
+
+        <!-- Grid -->
+        <div class="grid" id="projectGrid">
+          <!--
+            HOW TO ADD A VIDEO CARD
+            1) Duplicate the <article> block below and place it anywhere inside #projectGrid
+            2) Set data-category to one of: Social Media Videos, Interviews, Shot On iPhone, MLB Network, Weddings
+            3) Replace THUMB_FILENAME with your image in assets/img/
+            4) Replace VIDEO_ID with your Vimeo id (numbers only or the slug id)
+            5) Edit title and meta line
+            
+            <article class="card" data-category="Social Media Videos">
+              <img src="assets/img/THUMB_FILENAME.jpg" alt="Describe the thumbnail">
+              <div class="card-body">
+                <h3 class="card-title">Title goes here</h3>
+                <p class="card-meta">One-liner goes here</p>
+                <button class="btn btn-light open-modal" data-vimeo="VIDEO_ID">Watch</button>
+              </div>
+            </article>
+          -->
+        </div>
+
+        <div class="empty-note" id="emptyNote">
+          <p>No projects added yet. Add your first card using the comment instructions above. Once you add at least one card this message disappears.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section section-alt">
+      <div class="container about">
+        <img src="assets/img/profile.jpg" alt="Jason Rossell headshot" class="about-img">
+        <div>
+          <h2 class="section-title">About</h2>
+          <p>NYC based editor and social manager focused on combat sports and entertainment. Platform native storytelling, tight turnarounds, and clean color and sound.</p>
+          <ul class="bullets">
+            <li>Premiere Pro, After Effects, Audition</li>
+            <li>Vertical and horizontal delivery</li>
+            <li>Social strategy and analytics</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <div class="contact-box">
+          <div>
+            <p class="muted">Email</p>
+            <p><a href="mailto:jason@jasonrossell.com">jason@jasonrossell.com</a></p>
+          </div>
+          <div>
+            <p class="muted">Social</p>
+            <p><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Jason Rossell</p>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal" id="videoModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-dialog" role="document">
+      <button class="modal-close" aria-label="Close" title="Close" data-close>&times;</button>
+      <div class="video-responsive">
+        <iframe id="modalPlayer" src="" title="Video player" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
