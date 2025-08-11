@@ -1,7 +1,7 @@
 // ===== Year in footer =====
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ===== Filters with 2-row horizontal scroller for "All" =====
+// ===== Filters with 2-row horizontal scroller for "All" + category sort + edge fades =====
 const btns = document.querySelectorAll('.filter-btn');
 const grid = document.getElementById('projectGrid');
 const emptyNote = document.getElementById('emptyNote');
@@ -13,50 +13,59 @@ const ORDER = [
   'MLB Network',
   'Weddings'
 ];
-const PRI = Object.fromEntries(ORDER.map((name, i) => [name, i]));
+const ORDER_LOWER = ORDER.map(s => s.toLowerCase().trim());
+
+const norm = s => (s || '').toLowerCase().trim();
 
 function sortAllByCategory() {
   const cards = Array.from(grid.querySelectorAll('.card'));
-  cards.sort((a, b) => {
-    const pa = PRI[a.dataset.category] ?? 999;
-    const pb = PRI[b.dataset.category] ?? 999;
-    return pa - pb;
+  // bucket by normalized category
+  const buckets = new Map(ORDER_LOWER.map(k => [k, []]));
+  const misc = [];
+  cards.forEach(c => {
+    const cat = norm(c.dataset.category);
+    if (buckets.has(cat)) buckets.get(cat).push(c);
+    else misc.push(c);
   });
-  // Re-append in new order (stable relative order within each category)
-  cards.forEach(c => grid.appendChild(c));
+  // re-append in desired order, keeping original order inside each bucket
+  const frag = document.createDocumentFragment();
+  ORDER_LOWER.forEach(k => buckets.get(k).forEach(c => frag.appendChild(c)));
+  misc.forEach(c => frag.appendChild(c)); // anything unknown goes last
+  grid.appendChild(frag);
 }
 
 function updateHorizontalSizing(isAll) {
   if (!isAll) {
     grid.classList.remove('horizontal');
     grid.style.removeProperty('--col-width');
+    updateScrollFades(); // hide fades
     return;
   }
-  // Turn on horizontal mode
+  // turn on sideways 2-row scroller
   grid.classList.add('horizontal');
 
-  // Match your existing vertical sizes:
-  // >=960px: 3 columns, >=640px: 2 columns, else: 1 column (falls back to vertical)
+  // Match your vertical layout widths at each breakpoint
   const vw = window.innerWidth;
   const styles = getComputedStyle(grid);
   const gap = parseInt(styles.gap, 10) || 16;
 
   let columns;
-  if (vw >= 960) columns = 3;
-  else if (vw >= 640) columns = 2;
-  else columns = 1;
-
-  if (columns === 1) {
-    // Small screens: keep normal vertical flow
+  if (vw >= 960) columns = 3;       // desktop equals your 3-up layout
+  else if (vw >= 640) columns = 2;  // tablet equals your 2-up layout
+  else {
+    // small screens: fall back to normal vertical
     grid.classList.remove('horizontal');
     grid.style.removeProperty('--col-width');
+    updateScrollFades();
     return;
   }
 
-  // Compute column width to match the vertical grid at this breakpoint
   const container = grid.getBoundingClientRect().width;
   const colWidth = Math.floor((container - gap * (columns - 1)) / columns);
   grid.style.setProperty('--col-width', `${colWidth}px`);
+
+  // refresh fades now that sizes may have changed
+  requestAnimationFrame(updateScrollFades);
 }
 
 function applyFilter(filter) {
@@ -67,7 +76,7 @@ function applyFilter(filter) {
 
   let anyVisible = false;
   cards.forEach(card => {
-    const show = isAll || card.dataset.category === filter;
+    const show = isAll || norm(card.dataset.category) === norm(filter);
     card.style.display = show ? '' : 'none';
     if (show) anyVisible = true;
   });
@@ -86,15 +95,32 @@ btns.forEach(btn => {
   });
 });
 
-// Recompute sizes on resize
+// Recompute when resizing
 window.addEventListener('resize', () => {
   const activeBtn = document.querySelector('.filter-btn.active');
   const current = activeBtn ? activeBtn.dataset.filter : 'all';
   updateHorizontalSizing(current === 'all');
 });
 
+// ===== Edge fade helpers for the horizontal scroller =====
+function updateScrollFades() {
+  // show fades only when content overflows horizontally
+  const canScroll = grid.scrollWidth > grid.clientWidth + 1;
+  const atStart = grid.scrollLeft <= 1;
+  const atEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 1;
+
+  grid.classList.toggle('show-left-fade', canScroll && !atStart);
+  grid.classList.toggle('show-right-fade', canScroll && !atEnd);
+}
+
+grid.addEventListener('scroll', () => {
+  // passive scroll handler for smooth updates
+  updateScrollFades();
+}, { passive: true });
+
 // Initial render
 applyFilter('all');
+requestAnimationFrame(updateScrollFades);
 
 // ===== Modal open and close =====
 const modal = document.getElementById('videoModal');

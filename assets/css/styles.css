@@ -193,3 +193,34 @@ a:hover { text-decoration: underline; }
   /* Optional: slimmer horizontal scrollbar */
   .grid.horizontal::-webkit-scrollbar { height: 8px; }
   
+
+  /* Horizontal edge fades for "All" scroller */
+.grid.horizontal {
+    position: relative;
+    --fade-color: #fff; /* change to #f7f7f8 if your section bg is light gray */
+  }
+  
+  .grid.horizontal::before,
+  .grid.horizontal::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 64px;
+    pointer-events: none;   /* don't block clicks */
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  
+  .grid.horizontal::before {
+    left: 0;
+    background: linear-gradient(to right, var(--fade-color), rgba(255,255,255,0));
+  }
+  
+  .grid.horizontal::after {
+    right: 0;
+    background: linear-gradient(to left, var(--fade-color), rgba(255,255,255,0));
+  }
+  
+  .grid.horizontal.show-left-fade::before { opacity: 1; }
+  .grid.horizontal.show-right-fade::after { opacity: 1; }
+  
