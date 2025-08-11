@@ -213,14 +213,15 @@ a:hover { text-decoration: underline; }
     scroll-snap-align: start;
   }
   
-  /* Sticky edge fades live on a non-scrolling wrapper */
-  .hscroll { position: relative; }
-  
-  /* Set fade color to match your section background: #fff or #f7f7f8 */
-  .hscroll {
-    --fade-color: #fff;
-    --fade-w: 140px;      /* make this bigger if you want a longer gradient */
+/* Sticky edge fades on wrapper (softer) */
+.hscroll {
+    position: relative;
+    /* If your section bg is white, keep this. If it's the gray alt section, use 247,247,248 */
+    --fade-rgb: 255,255,255;  /* change to 247,247,248 for #f7f7f8 */
+    --fade-w: 200px;          /* wider = softer */
+    --fade-edge: 0.55;        /* max opacity at the very edge (0 to 1) */
   }
+  
   .hscroll::before,
   .hscroll::after {
     content: "";
@@ -232,28 +233,31 @@ a:hover { text-decoration: underline; }
     transition: opacity .2s ease;
     z-index: 2;
   }
+  
+  /* Left fade: strong at edge, smooth to 0 by ~75% */
   .hscroll::before {
     left: 0;
-    background: linear-gradient(to right, var(--fade-color), rgba(255,255,255,0));
+    background: linear-gradient(
+      to right,
+      rgba(var(--fade-rgb), var(--fade-edge)) 0%,
+      rgba(var(--fade-rgb), 0.35) 40%,
+      rgba(var(--fade-rgb), 0) 75%
+    );
   }
+  
+  /* Right fade: mirror of left */
   .hscroll::after {
     right: 0;
-    background: linear-gradient(to left, var(--fade-color), rgba(255,255,255,0));
+    background: linear-gradient(
+      to left,
+      rgba(var(--fade-rgb), var(--fade-edge)) 0%,
+      rgba(var(--fade-rgb), 0.35) 40%,
+      rgba(var(--fade-rgb), 0) 75%
+    );
   }
+  
   .hscroll.show-left-fade::before  { opacity: 1; }
   .hscroll.show-right-fade::after  { opacity: 1; }
   
-  /* Small screens fall back to vertical */
-  @media (max-width: 639.98px) {
-    .grid.horizontal {
-      grid-auto-flow: row;
-      overflow-x: visible;
-      scroll-snap-type: none;
-    }
-    .grid.horizontal .card {
-      width: auto;
-      grid-column: span 12;
-    }
-  }
   
   
