@@ -385,3 +385,20 @@ a:hover { text-decoration: underline; }
 #work .card-body { color: #111; }
 #work .card-title { color: #111; }
 #work .card-meta { color: #666; } /* keep the lighter meta */
+
+
+/* Category chip shown in "All" */
+.cat-chip{
+    display:inline-block;
+    font-size:12px;
+    font-weight:600;
+    line-height:1;
+    padding:6px 10px;
+    border-radius:999px;
+    background:#eee;
+    color:#111;
+    margin-bottom:8px;
+    letter-spacing:.2px;
+  }
+  #work .cat-chip{ background:#e6e6e6; }      /* reads well on white cards */
+  

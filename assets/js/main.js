@@ -27,13 +27,32 @@ function sortAllByCategory() {
   const misc = [];
   cards.forEach(c => {
     const cat = norm(c.dataset.category);
-    if (buckets.has(cat)) buckets.get(cat).push(c);
-    else misc.push(c);
+    if (buckets.has(cat)) buckets.get(cat).push(c); else misc.push(c);
   });
   const frag = document.createDocumentFragment();
   ORDER_LOWER.forEach(k => buckets.get(k).forEach(c => frag.appendChild(c)));
   misc.forEach(c => frag.appendChild(c));
   grid.appendChild(frag);
+}
+
+// Inject/remove category chips in card bodies
+function toggleCategoryChips(show) {
+  const cards = Array.from(grid.querySelectorAll('.card'));
+  cards.forEach(card => {
+    const body = card.querySelector('.card-body');
+    if (!body) return;
+    let chip = body.querySelector('.cat-chip');
+    if (show) {
+      if (!chip) {
+        chip = document.createElement('span');
+        chip.className = 'cat-chip';
+        body.insertBefore(chip, body.firstChild);
+      }
+      chip.textContent = card.dataset.category || '';
+    } else if (chip) {
+      chip.remove();
+    }
+  });
 }
 
 function setHorizontalLayout(filter) {
@@ -59,14 +78,12 @@ function setHorizontalLayout(filter) {
   const gap = parseInt(styles.gap, 10) || 16;
   const containerW = grid.getBoundingClientRect().width;
 
-  // containerW = (N + PEEK) * colW + (N - 1) * gap  => solve for colW
+  // containerW = (N + PEEK) * colW + (N - 1) * gap  => colW
   const colW = Math.floor(
     (containerW - (columnsFull - 1) * gap) / (columnsFull + PEEK)
   );
-
   grid.style.setProperty('--col-width', `${colW}px`);
 
-  // refresh fades
   requestAnimationFrame(updateScrollFades);
 }
 
@@ -85,6 +102,7 @@ function applyFilter(filter) {
 
   emptyNote.style.display = cards.length ? (anyVisible ? 'none' : 'block') : 'block';
   setHorizontalLayout(filter);
+  toggleCategoryChips(isAll); // <— show chips only in All
 }
 
 // Sticky fades on the wrapper; read the grid’s scroll state
