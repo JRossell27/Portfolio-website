@@ -348,3 +348,33 @@ a:hover { text-decoration: underline; }
   .hscroll.show-left-fade::before  { opacity: 1; }
   .hscroll.show-right-fade::after  { opacity: 1; }
   
+  /* Dark theme for the Work section */
+#work { background: #000; color: #fff; }
+
+/* Headline */
+#work .section-title { color: #fff; }
+
+/* Filters on dark bg */
+#work .filter-btn {
+  background: #111;
+  color: #eee;
+  border: 1px solid rgba(255,255,255,.2);
+}
+#work .filter-btn.active {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+
+/* Cards pop a bit more on black */
+#work .card { box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+
+/* Empty state, just in case */
+#work .empty-note {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.15);
+  color: #ddd;
+}
+
+/* Make the edge fades match black */
+#work .hscroll { --fade-rgb: 0,0,0; }
