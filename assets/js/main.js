@@ -25,26 +25,49 @@ btns.forEach(btn => {
 applyFilter('all');
 
 // Modal video player
+// ===== Modal open and close helpers =====
 const modal = document.getElementById('videoModal');
+const dialog = modal.querySelector('.modal-dialog');
 const modalPlayer = document.getElementById('modalPlayer');
+
+function openModal(id) {
+  modalPlayer.src = `https://player.vimeo.com/video/${id}`;
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  modalPlayer.src = ''; // stop playback
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+// Open on any element with .open-modal
 document.addEventListener('click', e => {
   const opener = e.target.closest('.open-modal');
-  if (opener) {
-    const id = opener.dataset.vimeo;
-    modalPlayer.src = `https://player.vimeo.com/video/${id}`;
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+  if (opener && opener.dataset.vimeo) {
+    openModal(opener.dataset.vimeo);
+    return;
   }
-  if (e.target.hasAttribute('data-close') || e.target.classList.contains('modal-close')) {
-    modalPlayer.src = '';
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+
+  // Close if:
+  // - click on [data-close] backdrop
+  // - click on the X button
+  // - click anywhere that is not inside the modal dialog
+  if (modal.getAttribute('aria-hidden') === 'false') {
+    const clickedBackdrop = e.target.hasAttribute('data-close');
+    const clickedCloseBtn = e.target.classList.contains('modal-close');
+    const clickedOutsideDialog = !e.target.closest('.modal-dialog');
+    if (clickedBackdrop || clickedCloseBtn || clickedOutsideDialog) {
+      closeModal();
+    }
   }
 });
+
+// Close on Esc
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
-    modalPlayer.src = '';
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    closeModal();
   }
 });
+

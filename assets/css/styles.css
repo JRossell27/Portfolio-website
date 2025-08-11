@@ -80,3 +80,4 @@ a:hover { text-decoration: underline; }
   outline: 2px solid #0a58ca;
   outline-offset: 2px;
 }
+.modal-backdrop { cursor: pointer; }
