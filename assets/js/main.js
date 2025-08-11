@@ -10,7 +10,7 @@ const emptyNote = document.getElementById('emptyNote');
 // Desired category order for "All"
 const ORDER = [
   'Social Media Videos',
-  'Interviews',
+  'Interviews/Long-Form',
   'Shot On iPhone',
   'MLB Network',
   'Weddings'
