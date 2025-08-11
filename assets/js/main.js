@@ -1,10 +1,10 @@
 // Year
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Filters + horizontal scroller for "All" + fixed edge fades + category sort
+// Filters + full-bleed horizontal scroller + category sort + sticky fades
 const btns = document.querySelectorAll('.filter-btn');
 const grid = document.getElementById('projectGrid');
-const hscroll = grid.parentElement; // the wrapper we added
+const hscroll = grid.parentElement; // .hscroll wrapper
 const emptyNote = document.getElementById('emptyNote');
 
 const ORDER = [
@@ -31,31 +31,24 @@ function sortAllByCategory() {
   grid.appendChild(frag);
 }
 
-function updateHorizontalSizing(isAll) {
-  if (!isAll) {
-    grid.classList.remove('horizontal');
+function setHorizontalLayout(filter) {
+  // Turn on horizontal for All and for every category on >=640px
+  const vw = window.innerWidth;
+  if (vw < 640) {
+    grid.classList.remove('horizontal', 'one-row');
     grid.style.removeProperty('--col-width');
     updateScrollFades();
     return;
   }
-  grid.classList.add('horizontal');
 
-  // match your vertical sizes at breakpoints
-  const vw = window.innerWidth;
+  grid.classList.add('horizontal');
+  grid.classList.toggle('one-row', filter !== 'all'); // All = 2 rows, others = 1 row
+
+  // Match your vertical card width at breakpoints (2-up on tablet, 3-up on desktop)
   const styles = getComputedStyle(grid);
   const gap = parseInt(styles.gap, 10) || 16;
-
-  let columns;
-  if (vw >= 960) columns = 3;
-  else if (vw >= 640) columns = 2;
-  else {
-    grid.classList.remove('horizontal');
-    grid.style.removeProperty('--col-width');
-    updateScrollFades();
-    return;
-  }
-
   const containerW = grid.getBoundingClientRect().width;
+  const columns = (vw >= 960) ? 3 : 2;
   const colW = Math.floor((containerW - gap * (columns - 1)) / columns);
   grid.style.setProperty('--col-width', `${colW}px`);
 
@@ -76,10 +69,10 @@ function applyFilter(filter) {
   });
 
   emptyNote.style.display = cards.length ? (anyVisible ? 'none' : 'block') : 'block';
-  updateHorizontalSizing(isAll);
+  setHorizontalLayout(filter);
 }
 
-// fade logic tied to the wrapper, using the grid's scroll state
+// Sticky fade logic (on wrapper; reads grid’s scroll)
 function updateScrollFades() {
   const canScroll = grid.scrollWidth > grid.clientWidth + 1;
   const atStart = grid.scrollLeft <= 1;
@@ -101,14 +94,14 @@ btns.forEach(btn => {
 window.addEventListener('resize', () => {
   const activeBtn = document.querySelector('.filter-btn.active');
   const current = activeBtn ? activeBtn.dataset.filter : 'all';
-  updateHorizontalSizing(current === 'all');
+  setHorizontalLayout(current);
 });
 
 // Initial render
 applyFilter('all');
 requestAnimationFrame(updateScrollFades);
 
-// ===== Modal open and close (unchanged) =====
+// ===== Modal open/close =====
 const modal = document.getElementById('videoModal');
 const modalPlayer = document.getElementById('modalPlayer');
 

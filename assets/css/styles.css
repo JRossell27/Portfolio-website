@@ -271,4 +271,80 @@ a:hover { text-decoration: underline; }
   /* Space between hero buttons */
   .hero .btn + .btn { margin-left: 12px; }
 
+  /* Full-bleed wrapper: make the scroller span the entire viewport width */
+.hscroll {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 0 12px; /* tiny gutter so cards don't kiss the bezel */
+  }
+  
+  /* Two-row horizontal scroller (default for "All") */
+  .grid.horizontal {
+    display: grid;
+    grid-auto-flow: column;                 /* fill rows, then create new column */
+    grid-auto-columns: var(--col-width, 360px);
+    grid-template-rows: repeat(2, auto);
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .grid.horizontal .card {
+    grid-column: auto;
+    width: var(--col-width, 360px);
+    scroll-snap-align: start;
+  }
+  
+  /* One-row mode for individual categories */
+  .grid.horizontal.one-row {
+    grid-template-rows: 1fr;
+  }
+  
+  /* Small screens: fall back to normal vertical grid */
+  @media (max-width: 639.98px) {
+    .grid.horizontal { grid-auto-flow: row; overflow-x: visible; scroll-snap-type: none; }
+    .grid.horizontal .card { width: auto; grid-column: span 12; }
+  }
+  
+  /* Sticky edge fades on the full-bleed wrapper (soft) */
+  .hscroll {
+    --fade-rgb: 255,255,255;  /* use 247,247,248 if section bg is #f7f7f8 */
+    --fade-w: 200px;          /* wider = softer */
+    --fade-edge: 0.5;         /* 0..1 edge opacity */
+  }
+  .hscroll::before,
+  .hscroll::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    width: var(--fade-w);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease;
+    z-index: 2;
+  }
+  .hscroll::before {
+    left: 0;
+    background: linear-gradient(
+      to right,
+      rgba(var(--fade-rgb), var(--fade-edge)) 0%,
+      rgba(var(--fade-rgb), 0.35) 40%,
+      rgba(var(--fade-rgb), 0) 75%
+    );
+  }
+  .hscroll::after {
+    right: 0;
+    background: linear-gradient(
+      to left,
+      rgba(var(--fade-rgb), var(--fade-edge)) 0%,
+      rgba(var(--fade-rgb), 0.35) 40%,
+      rgba(var(--fade-rgb), 0) 75%
+    );
+  }
+  .hscroll.show-left-fade::before  { opacity: 1; }
+  .hscroll.show-right-fade::after  { opacity: 1; }
   
