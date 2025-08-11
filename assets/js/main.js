@@ -1,13 +1,13 @@
 // ========= Year =========
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ========= Filters + full-bleed horizontal scroller + category sort + sticky fades =========
+// ========= Filters + full-bleed horizontal scroller + rank-first sort + sticky fades =========
 const btns = document.querySelectorAll('.filter-btn');
 const grid = document.getElementById('projectGrid');
 const hscroll = grid.parentElement; // .hscroll wrapper
 const emptyNote = document.getElementById('emptyNote');
 
-// Desired category order for "All"
+// Desired category order (update if you rename)
 const ORDER = [
   'Social Media Videos',
   'Interviews/Long-Form',
@@ -18,24 +18,69 @@ const ORDER = [
 const ORDER_LOWER = ORDER.map(s => s.toLowerCase().trim());
 const norm = s => (s || '').toLowerCase().trim();
 
-// How much of the next card to show (0.5 = half)
+// How much of the next card to show in the scroller (0.5 = half)
 const PEEK = 0.5;
 
-function sortAllByCategory() {
+// ---- helpers for sorting ----
+let indicesInit = false;
+function ensureIndices() {
+  if (indicesInit) return;
+  Array.from(grid.querySelectorAll('.card')).forEach((c, i) => {
+    if (!c.dataset.index) c.dataset.index = String(i);
+  });
+  indicesInit = true;
+}
+const hasRank = el => Number.isFinite(parseFloat(el.dataset.rank));
+const getRank = el => parseFloat(el.dataset.rank);
+const getIndex = el => parseInt(el.dataset.index || '0', 10);
+
+// Rank-first for ALL: ranked globally first, then unranked by category
+function sortAllRankThenCategory() {
+  ensureIndices();
   const cards = Array.from(grid.querySelectorAll('.card'));
+
+  const ranked = cards.filter(hasRank)
+    .sort((a, b) => getRank(a) - getRank(b) || getIndex(a) - getIndex(b));
+
+  const unranked = cards.filter(c => !hasRank(c));
   const buckets = new Map(ORDER_LOWER.map(k => [k, []]));
   const misc = [];
-  cards.forEach(c => {
+
+  unranked.forEach(c => {
     const cat = norm(c.dataset.category);
-    if (buckets.has(cat)) buckets.get(cat).push(c); else misc.push(c);
+    if (buckets.has(cat)) buckets.get(cat).push(c);
+    else misc.push(c);
   });
+
   const frag = document.createDocumentFragment();
-  ORDER_LOWER.forEach(k => buckets.get(k).forEach(c => frag.appendChild(c)));
-  misc.forEach(c => frag.appendChild(c));
+  ranked.forEach(c => frag.appendChild(c));
+  ORDER_LOWER.forEach(k => {
+    buckets.get(k)
+      .sort((a, b) => getIndex(a) - getIndex(b))
+      .forEach(c => frag.appendChild(c));
+  });
+  misc.sort((a, b) => getIndex(a) - getIndex(b)).forEach(c => frag.appendChild(c));
+
   grid.appendChild(frag);
 }
 
-// Inject/remove category chips in card bodies
+// Rank-first inside a single category; unranked keep original order
+function sortCategoryRankThenIndex(category) {
+  ensureIndices();
+  const cats = Array.from(grid.querySelectorAll('.card'))
+    .filter(c => norm(c.dataset.category) === norm(category));
+
+  const ranked = cats.filter(hasRank)
+    .sort((a, b) => getRank(a) - getRank(b) || getIndex(a) - getIndex(b));
+  const unranked = cats.filter(c => !hasRank(c))
+    .sort((a, b) => getIndex(a) - getIndex(b));
+
+  const frag = document.createDocumentFragment();
+  ranked.concat(unranked).forEach(c => frag.appendChild(c));
+  grid.appendChild(frag);
+}
+
+// ---- optional: category chips (only in All) ----
 function toggleCategoryChips(show) {
   const cards = Array.from(grid.querySelectorAll('.card'));
   cards.forEach(card => {
@@ -55,6 +100,7 @@ function toggleCategoryChips(show) {
   });
 }
 
+// ---- layout: full-bleed horizontal, 2 rows for All, 1 row for others, with peek ----
 function setHorizontalLayout(filter) {
   const vw = window.innerWidth;
 
@@ -78,20 +124,23 @@ function setHorizontalLayout(filter) {
   const gap = parseInt(styles.gap, 10) || 16;
   const containerW = grid.getBoundingClientRect().width;
 
-  // containerW = (N + PEEK) * colW + (N - 1) * gap  => colW
-  const colW = Math.floor(
-    (containerW - (columnsFull - 1) * gap) / (columnsFull + PEEK)
-  );
+  // containerW = (N + PEEK) * colW + (N - 1) * gap  => solve for colW
+  const colW = Math.floor((containerW - (columnsFull - 1) * gap) / (columnsFull + PEEK));
   grid.style.setProperty('--col-width', `${colW}px`);
 
   requestAnimationFrame(updateScrollFades);
 }
 
+// ---- main filter/render ----
 function applyFilter(filter) {
   const cards = Array.from(grid.querySelectorAll('.card'));
   const isAll = filter === 'all';
 
-  if (isAll) sortAllByCategory();
+  if (isAll) {
+    sortAllRankThenCategory();
+  } else {
+    sortCategoryRankThenIndex(filter);
+  }
 
   let anyVisible = false;
   cards.forEach(card => {
@@ -102,10 +151,10 @@ function applyFilter(filter) {
 
   emptyNote.style.display = cards.length ? (anyVisible ? 'none' : 'block') : 'block';
   setHorizontalLayout(filter);
-  toggleCategoryChips(isAll); // <— show chips only in All
+  toggleCategoryChips(isAll);
 }
 
-// Sticky fades on the wrapper; read the grid’s scroll state
+// ---- sticky fades on wrapper; read grid’s scroll ----
 function updateScrollFades() {
   const canScroll = grid.scrollWidth > grid.clientWidth + 1;
   const atStart = grid.scrollLeft <= 1;
