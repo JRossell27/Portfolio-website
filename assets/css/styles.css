@@ -260,4 +260,15 @@ a:hover { text-decoration: underline; }
   .hscroll.show-right-fade::after  { opacity: 1; }
   
   
+  /* Outline button for dark hero */
+.btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,.75);
+  }
+  .btn-outline:hover { background: rgba(255,255,255,.08); }
+  
+  /* Space between hero buttons */
+  .hero .btn + .btn { margin-left: 12px; }
+
   
