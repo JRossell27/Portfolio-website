@@ -151,3 +151,7 @@ a:hover { text-decoration: underline; }
   font-size: 28px; background: transparent; color: #fff;
   border: 0; cursor: pointer;
 }
+
+
+#reel { display: none !important; }
+.nav a[href="#reel"] { display: none !important; } /* optional */
