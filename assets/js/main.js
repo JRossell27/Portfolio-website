@@ -204,7 +204,8 @@ const modal = document.getElementById('videoModal');
 const modalPlayer = document.getElementById('modalPlayer');
 
 function openModal(id, ratio) {
-  modalPlayer.src = `https://player.vimeo.com/video/${id}`;
+  modalPlayer.src = `https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0`;
+
   if (ratio) modal.dataset.ratio = ratio; else modal.removeAttribute('data-ratio');
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';

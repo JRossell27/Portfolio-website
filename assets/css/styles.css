@@ -402,3 +402,22 @@ a:hover { text-decoration: underline; }
   }
   #work .cat-chip{ background:#e6e6e6; }      /* reads well on white cards */
   
+  /* Modal video: true 16:9, no crop, fits viewport */
+.modal-dialog { padding: 0; }            /* remove extra padding around the player */
+
+.video-responsive{
+  width: min(1200px, 92vw);              /* cap width */
+  max-height: 88vh;                      /* cap height so it never runs off-screen */
+  aspect-ratio: 16 / 9;                  /* exact 16:9 box */
+  position: relative;
+  margin: 0 auto;
+  pointer-events: none;                   /* clicking outside iframe still closes */
+}
+.video-responsive iframe{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  border-radius: 12px;                    /* soften corners; change to 0 if you want square */
+  pointer-events: auto;                   /* keep video controls clickable */
+}
