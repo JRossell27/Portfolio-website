@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin • Add Video</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+    .card { max-width: 680px; margin: 0 auto; padding: 24px; border: 1px solid #ddd; border-radius: 12px; }
+    .row { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px; }
+    label { font-weight: 600; }
+    input, select { padding: 8px; font-size: 14px; }
+    button { padding: 10px 14px; font-weight: 600; cursor: pointer; }
+    .error { color: #b00020; margin: 8px 0 0; }
+    .ok { color: #0a7f2e; margin: 8px 0 0; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Admin: Add Video</h1>
+
+    <div id="loginBox">
+      <div class="row">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="you@example.com" />
+      </div>
+      <div class="row">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Your password" />
+      </div>
+      <button id="loginBtn">Sign in</button>
+      <div id="loginMsg" class="error hidden"></div>
+    </div>
+
+    <div id="formBox" class="hidden">
+      <p>Signed in as <strong id="whoami"></strong> <button id="logoutBtn">Log out</button></p>
+
+      <div class="row">
+        <label>Vimeo URL or ID</label>
+        <input id="vimeo" type="text" placeholder="https://vimeo.com/123456789 or 123456789" />
+      </div>
+      <div class="row">
+        <label>Title</label>
+        <input id="title" type="text" placeholder="Video title" />
+      </div>
+      <div class="row">
+        <label>Category</label>
+        <select id="category">
+          <option>Social Media Videos</option>
+          <option>Interviews/Long-Form</option>
+          <option>Shot On iPhone</option>
+          <option>MLB Network</option>
+          <option>Weddings</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Rank (optional)</label>
+        <input id="rank" type="number" min="0" step="1" placeholder="Leave blank if unranked" />
+      </div>
+      <div class="row">
+        <label>Thumbnail JPG</label>
+        <input id="thumb" type="file" accept="image/*" />
+      </div>
+      <div class="row">
+        <label>Visible</label>
+        <select id="visible">
+          <option value="true" selected>Yes</option>
+          <option value="false">No (draft)</option>
+        </select>
+      </div>
+
+      <button id="saveBtn">Save Video</button>
+      <div id="saveMsg" class="ok hidden"></div>
+      <div id="saveErr" class="error hidden"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginBox = document.getElementById('loginBox');
+    const formBox = document.getElementById('formBox');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginMsg = document.getElementById('loginMsg');
+    const whoami = document.getElementById('whoami');
+
+    const vimeo = document.getElementById('vimeo');
+    const title = document.getElementById('title');
+    const category = document.getElementById('category');
+    const rank = document.getElementById('rank');
+    const thumb = document.getElementById('thumb');
+    const visible = document.getElementById('visible');
+    const saveBtn = document.getElementById('saveBtn');
+    const saveMsg = document.getElementById('saveMsg');
+    const saveErr = document.getElementById('saveErr');
+
+    function setHidden(el, yes) { el.classList.toggle('hidden', yes); }
+
+    function extractVimeoId(input) {
+      const s = (input || '').trim();
+      if (/^\d+$/.test(s)) return s; // plain numeric ID
+      // handles vimeo.com/123, player.vimeo.com/video/123, or query strings
+      const m = s.match(/vimeo\.com\/(?:video\/)?(\d+)/) || s.match(/(\d{6,})/);
+      return m ? m[1] : '';
+    }
+
+    async function refreshAuthUI() {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        whoami.textContent = data.user.email || data.user.id;
+        setHidden(loginBox, true);
+        setHidden(formBox, false);
+      } else {
+        setHidden(loginBox, false);
+        setHidden(formBox, true);
+      }
+    }
+
+    loginBtn.addEventListener('click', async () => {
+      loginMsg.textContent = '';
+      setHidden(loginMsg, true);
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { loginMsg.textContent = error.message; setHidden(loginMsg, false); }
+      await refreshAuthUI();
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      await refreshAuthUI();
+    });
+
+    saveBtn.addEventListener('click', async () => {
+      saveMsg.textContent = '';
+      saveErr.textContent = '';
+      setHidden(saveMsg, true);
+      setHidden(saveErr, true);
+
+      const id = extractVimeoId(vimeo.value);
+      if (!id) { saveErr.textContent = 'Enter a valid Vimeo URL or numeric ID.'; setHidden(saveErr, false); return; }
+      if (!title.value.trim()) { saveErr.textContent = 'Title is required.'; setHidden(saveErr, false); return; }
+      if (!thumb.files[0]) { saveErr.textContent = 'Please select a thumbnail image.'; setHidden(saveErr, false); return; }
+
+      // Upload thumbnail to Supabase Storage
+      const user = (await supabase.auth.getUser()).data.user;
+      const file = thumb.files[0];
+      const path = `${user.id}/${Date.now()}_${file.name.replace(/\s+/g,'_')}`;
+      const { error: upErr } = await supabase.storage.from('thumbnails').upload(path, file, { upsert: false, cacheControl: '3600' });
+      if (upErr) { saveErr.textContent = `Upload failed: ${upErr.message}`; setHidden(saveErr, false); return; }
+
+      const { data: pub } = supabase.storage.from('thumbnails').getPublicUrl(path);
+      const thumbUrl = pub.publicUrl;
+
+      const payload = {
+        title: title.value.trim(),
+        vimeo_id: id,
+        thumbnail_url: thumbUrl,
+        category: category.value,
+        rank: rank.value ? Number(rank.value) : null,
+        is_visible: visible.value === 'true'
+      };
+
+      const { error: insErr } = await supabase.from('videos').insert([payload]).select();
+      if (insErr) { saveErr.textContent = `Save failed: ${insErr.message}`; setHidden(saveErr, false); return; }
+
+      saveMsg.textContent = 'Saved. Check the public site and refresh.';
+      setHidden(saveMsg, false);
+
+      // Reset form
+      vimeo.value = ''; title.value = ''; rank.value = ''; thumb.value = ''; visible.value = 'true';
+    });
+
+    // Init
+    refreshAuthUI();
+  </script>
+</body>
+</html>
