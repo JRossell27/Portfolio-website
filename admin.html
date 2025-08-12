@@ -1,246 +1,205 @@
-// ========= Year =========
-document.getElementById('year').textContent = new Date().getFullYear();
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin • Add Video</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+    .card { max-width: 680px; margin: 0 auto; padding: 24px; border: 1px solid #ddd; border-radius: 12px; }
+    .row { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px; }
+    label { font-weight: 600; }
+    input, select { padding: 8px; font-size: 14px; }
+    button { padding: 10px 14px; font-weight: 600; cursor: pointer; }
+    .error { color: #b00020; margin: 8px 0 0; }
+    .ok { color: #0a7f2e; margin: 8px 0 0; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Admin: Add Video</h1>
 
-// ========= Filters + full-bleed horizontal scroller + Best/All logic + sticky fades =========
-const btns = document.querySelectorAll('.filter-btn');
-const grid = document.getElementById('projectGrid');
-const hscroll = grid.parentElement; // .hscroll wrapper
-const emptyNote = document.getElementById('emptyNote');
+    <div id="loginBox">
+      <div class="row">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="you@example.com" />
+      </div>
+      <div class="row">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Your password" />
+      </div>
+      <button id="loginBtn">Sign in</button>
+      <div id="loginMsg" class="error hidden"></div>
+    </div>
 
-// Category order for grouping
-const ORDER = [
-  'Social Media Videos',
-  'Interviews/Long-Form',
-  'Shot On iPhone',
-  'MLB Network',
-  'Weddings'
-];
-const ORDER_LOWER = ORDER.map(s => s.toLowerCase().trim());
-const norm = s => (s || '').toLowerCase().trim();
+    <div id="formBox" class="hidden">
+      <p>Signed in as <strong id="whoami"></strong> <button id="logoutBtn">Log out</button></p>
 
-// Show a peek of the next card in the scroller
-const PEEK = 0.5;
+      <div class="row">
+        <label>Vimeo URL or ID</label>
+        <input id="vimeo" type="text" placeholder="https://vimeo.com/123456789 or 123456789" />
+      </div>
+      <div class="row">
+        <label>Title</label>
+        <input id="title" type="text" placeholder="Video title" />
+      </div>
 
-// ----- indices to preserve original HTML order when needed -----
-let indicesInit = false;
-function ensureIndices() {
-  if (indicesInit) return;
-  Array.from(grid.querySelectorAll('.card')).forEach((c, i) => {
-    if (!c.dataset.index) c.dataset.index = String(i);
-  });
-  indicesInit = true;
-}
-const hasRank = el => Number.isFinite(parseFloat(el.dataset.rank));
-const getRank = el => parseFloat(el.dataset.rank);
-const getIndex = el => parseInt(el.dataset.index || '0', 10);
+      <div class="row">
+        <label>Subtitle</label>
+        <input id="subtitle" type="text" placeholder="Short line under the title" />
+      </div>
 
-// ----- chips shown only in "All" -----
-function toggleCategoryChips(show) {
-  const cards = Array.from(grid.querySelectorAll('.card'));
-  cards.forEach(card => {
-    const body = card.querySelector('.card-body');
-    if (!body) return;
-    let chip = body.querySelector('.cat-chip');
-    if (show) {
-      if (!chip) {
-        chip = document.createElement('span');
-        chip.className = 'cat-chip';
-        body.insertBefore(chip, body.firstChild);
+      <div class="row">
+        <label>Notes (internal)</label>
+        <textarea id="notes" rows="3" placeholder="Private notes (not shown on the site)"></textarea>
+      </div>
+
+      <div class="row">
+        <label>Category</label>
+        <select id="category">
+          <option>Social Media Videos</option>
+          <option>Interviews/Long-Form</option>
+          <option>Shot On iPhone</option>
+          <option>MLB Network</option>
+          <option>Weddings</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Rank (optional)</label>
+        <input id="rank" type="number" min="0" step="1" placeholder="Leave blank if unranked" />
+      </div>
+      <div class="row">
+        <label>Thumbnail JPG</label>
+        <input id="thumb" type="file" accept="image/*" />
+      </div>
+      <div class="row">
+        <label>Visible</label>
+        <select id="visible">
+          <option value="true" selected>Yes</option>
+          <option value="false">No (draft)</option>
+        </select>
+      </div>
+
+      <button id="saveBtn">Save Video</button>
+      <div id="saveMsg" class="ok hidden"></div>
+      <div id="saveErr" class="error hidden"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://nnirdmhmqznpxkdubypc.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaXJkbWhtcXpucHhrZHVieXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMDc5NDcsImV4cCI6MjA3MDU4Mzk0N30.nLxI7N0a7uO8lyZSmWHaiS2t1SLFoyCLaM5ET0Lmon0';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginBox = document.getElementById('loginBox');
+    const formBox = document.getElementById('formBox');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginMsg = document.getElementById('loginMsg');
+    const whoami = document.getElementById('whoami');
+
+    const vimeo = document.getElementById('vimeo');
+    const title = document.getElementById('title');
+    const subtitle = document.getElementById('subtitle');
+    const notes = document.getElementById('notes');
+    const category = document.getElementById('category');
+    const rank = document.getElementById('rank');
+    const thumb = document.getElementById('thumb');
+    const visible = document.getElementById('visible');
+    const saveBtn = document.getElementById('saveBtn');
+    const saveMsg = document.getElementById('saveMsg');
+    const saveErr = document.getElementById('saveErr');
+
+    function setHidden(el, yes) { el.classList.toggle('hidden', yes); }
+
+    function extractVimeoId(input) {
+      const s = (input || '').trim();
+      if (/^\d+$/.test(s)) return s; // plain numeric ID
+      // handles vimeo.com/123, player.vimeo.com/video/123, or query strings
+      const m = s.match(/vimeo\.com\/(?:video\/)?(\d+)/) || s.match(/(\d{6,})/);
+      return m ? m[1] : '';
+    }
+
+    async function refreshAuthUI() {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        whoami.textContent = data.user.email || data.user.id;
+        setHidden(loginBox, true);
+        setHidden(formBox, false);
+      } else {
+        setHidden(loginBox, false);
+        setHidden(formBox, true);
       }
-      chip.textContent = card.dataset.category || '';
-    } else if (chip) {
-      chip.remove();
     }
-  });
-}
 
-// ----- layout: full-bleed horizontal, rows=2 for Best and All, rows=1 for categories -----
-function setHorizontalLayout(rowsWanted) {
-  const vw = window.innerWidth;
+    loginBtn.addEventListener('click', async () => {
+      loginMsg.textContent = '';
+      setHidden(loginMsg, true);
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { loginMsg.textContent = error.message; setHidden(loginMsg, false); }
+      await refreshAuthUI();
+    });
 
-  // Small screens: vertical list
-  if (vw < 640 || rowsWanted === 0) {
-    grid.classList.remove('horizontal', 'one-row');
-    grid.style.removeProperty('--col-width');
-    updateScrollFades();
-    return;
-  }
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      await refreshAuthUI();
+    });
 
-  grid.classList.add('horizontal');
-  grid.classList.toggle('one-row', rowsWanted === 1);
+    saveBtn.addEventListener('click', async () => {
+      saveMsg.textContent = '';
+      saveErr.textContent = '';
+      setHidden(saveMsg, true);
+      setHidden(saveErr, true);
 
-  // desktop=3 columns, tablet=2 columns
-  const columnsFull = (vw >= 960) ? 3 : 2;
+      const id = extractVimeoId(vimeo.value);
+      if (!id) { saveErr.textContent = 'Enter a valid Vimeo URL or numeric ID.'; setHidden(saveErr, false); return; }
+      if (!title.value.trim()) { saveErr.textContent = 'Title is required.'; setHidden(saveErr, false); return; }
+      if (!thumb.files[0]) { saveErr.textContent = 'Please select a thumbnail image.'; setHidden(saveErr, false); return; }
 
-  // Compute card width so we show N full cards + a PEEK of the next
-  const styles = getComputedStyle(grid);
-  const gap = parseInt(styles.gap, 10) || 16;
-  const containerW = grid.getBoundingClientRect().width;
+      // Upload thumbnail to Supabase Storage
+      const user = (await supabase.auth.getUser()).data.user;
+      const file = thumb.files[0];
+      const path = `${user.id}/${Date.now()}_${file.name.replace(/\s+/g,'_')}`;
+      const { error: upErr } = await supabase.storage.from('thumbnails').upload(path, file, { upsert: false, cacheControl: '3600' });
+      if (upErr) { saveErr.textContent = `Upload failed: ${upErr.message}`; setHidden(saveErr, false); return; }
 
-  // containerW = (N + PEEK) * colW + (N - 1) * gap  => colW
-  const colW = Math.floor((containerW - (columnsFull - 1) * gap) / (columnsFull + PEEK));
-  grid.style.setProperty('--col-width', `${colW}px`);
+      const { data: pub } = supabase.storage.from('thumbnails').getPublicUrl(path);
+      const thumbUrl = pub.publicUrl;
 
-  requestAnimationFrame(updateScrollFades);
-}
+      const payload = {
+        title: title.value.trim(),
+        vimeo_id: id,
+        thumbnail_url: thumbUrl,
+        category: category.value,
+        rank: rank.value ? Number(rank.value) : null,
+        is_visible: visible.value === 'true',
+        subtitle: (subtitle && subtitle.value.trim()) ? subtitle.value.trim() : null,
+        notes: (notes && notes.value.trim()) ? notes.value.trim() : null
+      };
 
-// ----- renderers -----
-function renderBest() {
-  ensureIndices();
-  const cards = Array.from(grid.querySelectorAll('.card'));
-  const ranked = cards.filter(hasRank)
-    .sort((a, b) => getRank(a) - getRank(b) || getIndex(a) - getIndex(b));
+      const { error: insErr } = await supabase.from('videos').insert([payload]).select();
+      if (insErr) { saveErr.textContent = `Save failed: ${insErr.message}`; setHidden(saveErr, false); return; }
 
-  // reorder DOM to match ranked order
-  const frag = document.createDocumentFragment();
-  ranked.forEach(c => frag.appendChild(c));
-  grid.appendChild(frag);
+      saveMsg.textContent = 'Saved. Check the public site and refresh.';
+      setHidden(saveMsg, false);
 
-  // show ranked only
-  cards.forEach(c => c.style.display = hasRank(c) ? '' : 'none');
+      // Reset form
+      vimeo.value = '';
+      title.value = '';
+      if (subtitle) subtitle.value = '';
+      if (notes) notes.value = '';
+      rank.value = '';
+      thumb.value = '';
+      visible.value = 'true';
+    });
 
-  emptyNote.style.display = ranked.length ? 'none' : 'block';
-  toggleCategoryChips(true);   // show chips on Best Work
-  setHorizontalLayout(2);
-
-}
-
-function renderAllUnranked() {
-  ensureIndices();
-  const cards = Array.from(grid.querySelectorAll('.card'));
-
-  // Bucket ALL cards by category order
-  const buckets = new Map(ORDER_LOWER.map(k => [k, []]));
-  const misc = [];
-  cards.forEach(c => {
-    const cat = norm(c.dataset.category);
-    if (buckets.has(cat)) buckets.get(cat).push(c);
-    else misc.push(c);
-  });
-
-  // Preserve original DOM order within each bucket using data-index
-  const frag = document.createDocumentFragment();
-  ORDER_LOWER.forEach(k => {
-    buckets.get(k)
-      .sort((a, b) => getIndex(a) - getIndex(b))
-      .forEach(c => frag.appendChild(c));
-  });
-  misc
-    .sort((a, b) => getIndex(a) - getIndex(b))
-    .forEach(c => frag.appendChild(c));
-  grid.appendChild(frag);
-
-  // Show ALL cards, ignore data-rank for visibility
-  cards.forEach(c => c.style.display = '');
-
-  emptyNote.style.display = cards.length ? 'none' : 'block';
-  toggleCategoryChips(true);
-  setHorizontalLayout(2);
-}
-
-function renderCategory(catLabel) {
-  ensureIndices();
-  const cards = Array.from(grid.querySelectorAll('.card'));
-  const target = cards.filter(c => norm(c.dataset.category) === norm(catLabel));
-
-  // inside the category: ranked first by rank, then unranked by original index
-  const ranked = target.filter(hasRank)
-    .sort((a, b) => getRank(a) - getRank(b) || getIndex(a) - getIndex(b));
-  const unranked = target.filter(c => !hasRank(c))
-    .sort((a, b) => getIndex(a) - getIndex(b));
-
-  const frag = document.createDocumentFragment();
-  ranked.concat(unranked).forEach(c => frag.appendChild(c));
-  grid.appendChild(frag);
-
-  // show only this category
-  cards.forEach(c => {
-    const show = norm(c.dataset.category) === norm(catLabel);
-    c.style.display = show ? '' : 'none';
-  });
-
-  emptyNote.style.display = target.length ? 'none' : 'block';
-  toggleCategoryChips(false);
-  setHorizontalLayout(1);
-}
-
-// ----- filter controller -----
-function applyFilter(filter) {
-  if (filter === 'best') return renderBest();
-  if (filter === 'all') return renderAllUnranked();
-  return renderCategory(filter);
-}
-
-// ----- sticky fades on wrapper; read grid scroll -----
-function updateScrollFades() {
-  const canScroll = grid.scrollWidth > grid.clientWidth + 1;
-  const atStart = grid.scrollLeft <= 1;
-  const atEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 1;
-  hscroll.classList.toggle('show-left-fade',  canScroll && !atStart);
-  hscroll.classList.toggle('show-right-fade', canScroll && !atEnd);
-}
-
-grid.addEventListener('scroll', () => updateScrollFades(), { passive: true });
-
-btns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    btns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilter(btn.dataset.filter);
-  });
-});
-
-window.addEventListener('resize', () => {
-  const activeBtn = document.querySelector('.filter-btn.active');
-  const current = activeBtn ? activeBtn.dataset.filter : 'best';
-  // rows depend on filter, but setHorizontalLayout recalculates widths
-  if (current === 'best' || current === 'all') setHorizontalLayout(2);
-  else setHorizontalLayout(1);
-});
-
-// Initial render to Best Work
-applyFilter('best');
-requestAnimationFrame(updateScrollFades);
-
-// ========= Modal open/close =========
-const modal = document.getElementById('videoModal');
-const modalPlayer = document.getElementById('modalPlayer');
-
-function openModal(id, ratio) {
-  modalPlayer.src = `https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0`;
-
-  if (ratio) modal.dataset.ratio = ratio; else modal.removeAttribute('data-ratio');
-  modal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal() {
-  modalPlayer.src = '';
-  modal.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('click', e => {
-  const opener = e.target.closest('.open-modal');
-  if (opener && opener.dataset.vimeo) {
-    openModal(opener.dataset.vimeo, opener.dataset.ratio);
-    return;
-  }
-  if (modal.getAttribute('aria-hidden') === 'false') {
-    const clickedBackdrop = e.target.hasAttribute('data-close');
-    const clickedCloseBtn = e.target.closest('.modal-close');
-    const insideVideo = !!e.target.closest('.video-responsive');
-    if (clickedBackdrop || clickedCloseBtn || !insideVideo) closeModal();
-  }
-});
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const el = document.activeElement;
-    if (el && el.classList && el.classList.contains('open-modal') && el.dataset.vimeo) {
-      openModal(el.dataset.vimeo, el.dataset.ratio);
-    }
-  }
-  if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
-    closeModal();
-  }
-});
+    // Init
+    refreshAuthUI();
+  </script>
+</body>
+</html>
