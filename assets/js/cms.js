@@ -2,8 +2,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 // 1) Fill these with your real values
-const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+const SUPABASE_URL = 'https://nnirdmhmqznpxkdubypc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaXJkbWhtcXpucHhrZHVieXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMDc5NDcsImV4cCI6MjA3MDU4Mzk0N30.nLxI7N0a7uO8lyZSmWHaiS2t1SLFoyCLaM5ET0Lmon0';
 
 // 2) Init
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
