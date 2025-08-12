@@ -1,32 +1,308 @@
-function renderAllUnranked() {
-  ensureIndices();
-  const cards = Array.from(grid.querySelectorAll('.card'));
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/img/favicon.png" type="image/png">
+  <title>Jason Rossell • Portfolio</title>
+  <meta name="description" content="Social Media Manager, Video Editor, and Content Producer. Portfolio of featured work.">
+  <link rel="preconnect" href="https://player.vimeo.com">
+  <link rel="preconnect" href="https://i.vimeocdn.com">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body id="top">
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav">
+        <a class="brand" href="#top">JR</a>
+        <ul class="nav-links">
+          <li><a href="#reel">Reel</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="hero">
+        <h1>JASON ROSSELL</h1>
+        <p>Social Media Manager / Video Editor / Content Producer @ PPV.COM 🎥 Driving platform growth & engagement with innovative content 📈 Expert in video editing, campaign management & real-time event coverage.</p>
+      
+        <a href="#work" class="btn">See work</a>
+        <a href="assets/resume/jason-rossell-resume.jpg"
+   class="btn"
+   target="_blank" rel="noopener">View Résumé</a>
 
-  // Bucket ALL cards by category order
-  const buckets = new Map(ORDER_LOWER.map(k => [k, []]));
-  const misc = [];
-  cards.forEach(c => {
-    const cat = norm(c.dataset.category);
-    if (buckets.has(cat)) buckets.get(cat).push(c);
-    else misc.push(c);
-  });
+      </div>
+      
+    </div>
+  </header>
 
-  // Preserve original DOM order within each category using data-index
-  const frag = document.createDocumentFragment();
-  ORDER_LOWER.forEach(k => {
-    buckets.get(k)
-      .sort((a, b) => getIndex(a) - getIndex(b))
-      .forEach(c => frag.appendChild(c));
-  });
-  misc
-    .sort((a, b) => getIndex(a) - getIndex(b))
-    .forEach(c => frag.appendChild(c));
-  grid.appendChild(frag);
+  <main>
+    <!-- Reel -->
+    <section id="reel" class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">Featured reel</h2>
+        <p class="section-kicker">Add your main reel by replacing REEL_VIDEO_ID below.</p>
+        <div class="video-responsive shadow">
+          <iframe src="https://player.vimeo.com/video/692328099" title="Featured reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
 
-  // Show ALL cards
-  cards.forEach(c => c.style.display = '');
+    <!-- Work with category filters -->
+    <section id="work" class="section">
+      <div class="container">
+        <h2 class="section-title">Featured Work</h2>
 
-  emptyNote.style.display = cards.length ? 'none' : 'block';
-  toggleCategoryChips(true);
-  setHorizontalLayout(2);
-}
+        <div class="filters" role="tablist" aria-label="Filter projects by category">
+          <button class="filter-btn active" data-filter="best" role="tab" aria-selected="true">Best Work</button>
+          <button class="filter-btn" data-filter="Social Media Videos" role="tab" aria-selected="false">Social Media Videos</button>
+          <button class="filter-btn" data-filter="Interviews/Long-Form" role="tab" aria-selected="false">Interviews/Long-Form</button>
+          <button class="filter-btn" data-filter="Shot On iPhone" role="tab" aria-selected="false">Shot On iPhone</button>
+          <button class="filter-btn" data-filter="MLB Network" role="tab" aria-selected="false">MLB Network</button>
+          <button class="filter-btn" data-filter="Weddings" role="tab" aria-selected="false">Weddings</button>
+          <button class="filter-btn" data-filter="all" role="tab" aria-selected="false">All</button>
+        </div>
+        
+
+        <!-- sticky-fade wrapper -->
+        <div class="hscroll" id="hscroll">
+          <div class="grid" id="projectGrid">
+
+        <article class="card open-modal" data-category="Social Media Videos" data-vimeo="1109179202" data-rank="6">
+          <img src="assets/img/teampac.jpg" alt="Describe the thumbnail" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title">Team Pacquiao Reunited</h3>
+            <p class="card-meta">Shot, Edited, Posted.
+            </p>
+          </div>
+        </article>
+
+        <article class="card open-modal" data-category="Social Media Videos" data-vimeo="1109188614" data-rank="1">
+          <img src="assets/img/WilderKO.jpg" alt="Describe the thumbnail" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title">Deontay Wilder's Favorite KOs</h3>
+            <p class="card-meta">Edited, Posted.
+            </p>
+          </div>
+        </article>
+
+        <article class="card open-modal" data-category="Interviews/Long-Form" data-vimeo="1109180682" data-rank="2">
+          <img src="assets/img/AlgieriBreakdown.jpg" alt="Describe the thumbnail" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title">Chris Algieri breaks down Pacquiao vs. Barrios</h3>
+            <p class="card-meta">Produced, Edited, Posted. 
+              22K views on YouTube.
+            </p>
+          </div>
+        </article>
+        
+            <article class="card open-modal" data-category="Social Media Videos" data-vimeo="1109090027">
+              <img src="assets/img/AJKO.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Anthony Joshua KO Clip</h3>
+                <p class="card-meta">Edited, Posted.</p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Interviews/Long-Form" data-vimeo="1109189541">
+              <img src="assets/img/rollygarciabreakdown.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Chris Algieri breaks down Ryan Garcia vs. Rolly Romero</h3>
+                <p class="card-meta">Produced, Edited, Posted. 
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Social Media Videos" data-vimeo="946755830" data-rank="5">
+              <img src="assets/img/haneyfightweek.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Devin Haney vs. Ryan Garcia Fight Week Hype Reel</h3>
+                <p class="card-meta">Edited, Posted.</p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Social Media Videos" data-vimeo="1109090835">
+              <img src="assets/img/crawfordrushmore.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Terence Crawford Gives His Mount Rushmore</h3>
+                <p class="card-meta">Shot, Edited, Posted.</p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Social Media Videos" data-vimeo="988507036">
+              <img src="assets/img/JakePaul.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Jake Paul Blind Ranks Opponents</h3>
+                <p class="card-meta">Shot, Edited, Posted.</p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Interviews/Long-Form" data-vimeo="946755775" data-rank="8">
+              <img src="assets/img/canelolamps.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Canelo Alvarez sits down with Jim Lampley</h3>
+                <p class="card-meta">Produced, Shot, Edited, Posted.
+                  65K views on YouTube.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Interviews/Long-Form" data-vimeo="1109119798">
+              <img src="https://vumbnail.com/1109119798.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Manny Pacquiao sits down with Chris Algieri</h3>
+                <p class="card-meta">Produced, Shot, Edited, Posted. 
+                  52K views on YouTube.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Shot On iPhone" data-vimeo="1109123633">
+              <img src="assets/img/caneloberlanga.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Canelo Alvarez drops Edgar Berlanga</h3>
+                <p class="card-meta">Shot, Posted. 
+                  4M views on Facebook.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Shot On iPhone" data-vimeo="946755866" data-rank="3">
+              <img src="assets/img/empirestatebuilding.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Ryan Garcia and Devin Haney face off on top of The Empire State Building</h3>
+                <p class="card-meta">Shot, Posted. 
+                  3M views on TikTok.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Social Media Videos" data-vimeo="1109126219">
+              <img src="assets/img/kiss.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">KISS' Final Show Hype Reel</h3>
+                <p class="card-meta">Shot, Edited, Posted. 
+                  344k views on Instagram.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="MLB Network" data-vimeo="711711949" data-rank="4">
+              <img src="https://vumbnail.com/711711949.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">MLB Best Images of April</h3>
+                <p class="card-meta">Edited for MLB Network broadcast and socials highlighting the best moments of the month.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="MLB Network" data-vimeo="692320772">
+              <img src="https://vumbnail.com/692320772.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Willy Adames Top 100 Hype Reel</h3>
+                <p class="card-meta">Edited for MLB Network's list of the Top 100 Players Right Now.
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="MLB Network" data-vimeo="692321771">
+              <img src="https://vumbnail.com/692321771.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">BOS v NYY MLBN Showcase Game Tease</h3>
+                <p class="card-meta">Edited for MLB Network to create hype for a Showcase Game. 
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Weddings" data-vimeo="1109148273" data-rank="10">
+              <img src="assets/img/haleyandrew.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Haley + Andrew</h3>
+                <p class="card-meta">Edited and Color Corrected. 6 minute wedding recap video. 
+                </p>
+              </div>
+            </article>
+
+            <article class="card open-modal" data-category="Weddings" data-vimeo="1109147027">
+              <img src="assets/img/juliakirk.jpg" alt="Describe the thumbnail" loading="lazy">
+              <div class="card-body">
+                <h3 class="card-title">Julia + Kirk</h3>
+                <p class="card-meta">Edited and Color Corrected. 3 minute wedding recap video. 
+                </p>
+              </div>
+            </article>
+
+            
+
+            
+
+
+          </div>
+        </div>
+        <!-- end sticky-fade wrapper -->
+
+        <div class="empty-note" id="emptyNote">
+          <p>No projects added yet. Add your first card using the comment instructions above. Once you add at least one card this message disappears.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+   <section id="about" class="section section-alt">
+  <div class="container about">
+    <img src="assets/img/profile.jpg" alt="Jason Rossell headshot" class="about-img">
+    <div>
+      <h2 class="section-title">About</h2>
+      <p>
+        <p>I create platform native video that lifts reach, watch time, and conversion. At PPV.COM I run fight week coverage, same day edits, and channel management across Instagram, TikTok, X, YouTube, and Facebook.
+
+      </p>
+      <ul class="bullets">
+        <li>Platform-native content across Instagram, TikTok, X, Threads, YouTube, and Facebook</li>
+        <li>Real-time event coverage: on-location shooting, same-day edits, asset delivery</li>
+        <li>Campaign planning, content calendars, community management, analytics & reporting</li>
+        <li>Premiere Pro, After Effects, Photoshop, Sprout Social</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <div class="contact-box">
+          <div>
+            <p class="muted">Email</p>
+            <p><a href="mailto:jason.rossell9@gmail.com">jason.rossell9@gmail.com</a></p>
+          </div>
+          <div>
+            <p class="muted">Social</p>
+            <p><a href="https://www.linkedin.com/in/j-rossell/" target="_blank" rel="noopener">LinkedIn</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Jason Rossell</p>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal" id="videoModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-dialog" role="document">
+      <button class="modal-close" data-close aria-label="Close" title="Close">&times;</button>
+      <div class="video-responsive">
+        <iframe id="modalPlayer" src="" title="Video player" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
