@@ -100,8 +100,8 @@ function renderBest() {
   cards.forEach(c => c.style.display = hasRank(c) ? '' : 'none');
 
   emptyNote.style.display = ranked.length ? 'none' : 'block';
-toggleCategoryChips(true);   // show chips on Best Work
-setHorizontalLayout(2);
+  toggleCategoryChips(true);   // show chips on Best Work
+  setHorizontalLayout(2);
 
 }
 
