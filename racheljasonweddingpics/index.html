@@ -45,20 +45,16 @@
         <div class="upload-content">
           <label class="file-picker" for="photoInput">
             <span class="file-picker-icon" aria-hidden="true">+</span>
-            <span class="file-picker-text">Select photos</span>
-            <span class="file-picker-note">JPG, PNG, HEIC, or WebP</span>
+            <span class="file-picker-text">Choose photos</span>
+            <span class="file-picker-note">They upload automatically</span>
           </label>
           <input id="photoInput" type="file" accept="image/jpeg,image/png,image/heic,image/heif,image/webp" multiple>
-          <p class="selection-note" id="selectionNote">Your photos stay private.</p>
+          <p class="selection-note" id="selectionNote">Choose as many photos as you like. They will start uploading right away.</p>
         </div>
 
         <div class="file-list" id="fileList" aria-live="polite"></div>
 
         <div class="upload-actions">
-          <button class="upload-button" id="uploadButton" type="button" disabled>
-            <span>Upload photos</span>
-            <span aria-hidden="true">↗</span>
-          </button>
           <p class="upload-status" id="uploadStatus" role="status">Choose photos to begin.</p>
         </div>
       </div>

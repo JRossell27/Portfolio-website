@@ -6,11 +6,9 @@
   ]);
 
   const photoInput = document.getElementById('photoInput');
-  const uploadButton = document.getElementById('uploadButton');
   const uploadStatus = document.getElementById('uploadStatus');
   const selectionNote = document.getElementById('selectionNote');
   const fileList = document.getElementById('fileList');
-  let selectedFiles = [];
 
   const updateStatus = (message, type = '') => {
     uploadStatus.textContent = message;
@@ -56,80 +54,30 @@
   });
 
   /*
-    A regular form targeting an invisible frame deliberately avoids cross-site
-    browser restrictions when this page posts to the owner’s Apps Script URL.
+    Apps Script accepts a normal form-encoded POST. `no-cors` keeps this public
+    upload request simple for guests while the page still waits for the network
+    request to complete before moving to the next photo.
   */
-  const postPhoto = (payload) => new Promise((resolve, reject) => {
-    const frameName = `wedding-upload-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const frame = document.createElement('iframe');
-    frame.name = frameName;
-    frame.hidden = true;
+  const postPhoto = async (payload) => {
+    const body = new URLSearchParams({ payload: JSON.stringify(payload) });
+    await fetch(endpoint, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+      body
+    });
+  };
 
-    const form = document.createElement('form');
-    form.method = 'post';
-    form.action = endpoint;
-    form.target = frameName;
-    form.hidden = true;
-
-    const input = document.createElement('input');
-    input.name = 'payload';
-    input.value = JSON.stringify(payload);
-    form.append(input);
-
-    let submitted = false;
-    const cleanup = () => {
-      window.clearTimeout(timeout);
-      form.remove();
-      frame.remove();
-    };
-    const timeout = window.setTimeout(() => {
-      cleanup();
-      reject(new Error('The upload took too long. Please try that photo again.'));
-    }, 90_000);
-
-    frame.addEventListener('load', () => {
-      if (!submitted) return;
-      cleanup();
-      resolve();
-    }, { once: true });
-
-    document.body.append(frame, form);
-    submitted = true;
-    form.submit();
-  });
-
-  photoInput.addEventListener('change', () => {
-    const chosen = Array.from(photoInput.files || []);
-    const rejected = chosen.filter((file) => !fileIsAccepted(file) || file.size > maxFileBytes);
-    selectedFiles = chosen.filter((file) => fileIsAccepted(file) && file.size <= maxFileBytes);
-    renderFiles();
-
-    if (rejected.length) {
-      updateStatus('Some files were skipped. Please choose image files under 20 MB.', 'error');
-    } else if (selectedFiles.length) {
-      updateStatus(`${selectedFiles.length} photo${selectedFiles.length === 1 ? '' : 's'} ready to upload.`);
-    } else {
-      updateStatus('Choose one or more photos to begin.');
-    }
-
-    selectionNote.textContent = selectedFiles.length
-      ? 'Want to change your selection? Choose a new set of photos before uploading.'
-      : 'Your photos stay private.';
-    uploadButton.disabled = !endpoint || !selectedFiles.length;
-  });
-
-  uploadButton.addEventListener('click', async () => {
-    if (!endpoint || !selectedFiles.length) return;
-
-    uploadButton.disabled = true;
+  const uploadFiles = async (files) => {
     photoInput.disabled = true;
     let uploaded = 0;
 
     try {
-      for (const [index, file] of selectedFiles.entries()) {
+      for (const [index, file] of files.entries()) {
         updateRow(index, 'Preparing', 'uploading');
         const base64 = await getBase64(file);
         updateRow(index, 'Uploading', 'uploading');
+        updateStatus(`Uploading photo ${index + 1} of ${files.length}. Keep this page open.`);
         await postPhoto({
           fileName: file.name,
           mimeType: file.type || 'image/jpeg',
@@ -137,22 +85,51 @@
         });
         uploaded += 1;
         updateRow(index, 'Saved', 'uploaded');
-        updateStatus(`Saving photo ${uploaded} of ${selectedFiles.length}…`);
       }
 
       updateStatus('All set—thank you for sharing these moments with us.', 'success');
       selectionNote.textContent = 'Want to add more? Choose another set of photos.';
-      selectedFiles = [];
-      photoInput.value = '';
     } catch (error) {
       updateStatus(`We saved ${uploaded} photo${uploaded === 1 ? '' : 's'}. ${error.message}`, 'error');
+    } finally {
       photoInput.disabled = false;
-      uploadButton.disabled = false;
-      return;
+      photoInput.value = '';
+    }
+  };
+
+  photoInput.addEventListener('change', () => {
+    const chosen = Array.from(photoInput.files || []);
+    const rejected = chosen.filter((file) => !fileIsAccepted(file) || file.size > maxFileBytes);
+    const acceptedFiles = chosen.filter((file) => fileIsAccepted(file) && file.size <= maxFileBytes);
+    clearList();
+    acceptedFiles.forEach((file, index) => {
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      row.dataset.fileIndex = String(index);
+
+      const name = document.createElement('span');
+      name.className = 'file-row-name';
+      name.textContent = file.name;
+
+      const status = document.createElement('span');
+      status.className = 'file-row-status';
+      status.textContent = `${Math.max(1, Math.round(file.size / 1024 / 1024))} MB`;
+      row.append(name, status);
+      fileList.append(row);
+    });
+
+    if (rejected.length) {
+      updateStatus('Some files were skipped. Please choose image files under 20 MB.', 'error');
+    } else if (acceptedFiles.length) {
+      updateStatus(`Starting ${acceptedFiles.length} photo${acceptedFiles.length === 1 ? '' : 's'}…`);
+    } else {
+      updateStatus('Choose one or more photos to begin.');
     }
 
-    photoInput.disabled = false;
-    uploadButton.disabled = true;
+    selectionNote.textContent = acceptedFiles.length
+      ? 'Your upload has started. Please keep this page open until it finishes.'
+      : 'Choose as many photos as you like. They will start uploading right away.';
+    if (endpoint && acceptedFiles.length) uploadFiles(acceptedFiles);
   });
 
   if (!endpoint) {
