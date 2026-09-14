@@ -50,7 +50,6 @@ button, input { font: inherit; }
 
 .eyebrow,
 .kicker,
-.step,
 .site-footer p {
   margin: 0;
   font-family: "DM Mono", monospace;
@@ -82,14 +81,6 @@ h1 {
   letter-spacing: -.054em;
 }
 
-.lede {
-  max-width: 480px;
-  margin: 0 auto;
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1.55;
-}
-
 .photo-drop {
   margin-top: 62px;
   padding-top: 26px;
@@ -97,8 +88,6 @@ h1 {
 }
 
 .photo-drop-heading { max-width: 545px; }
-.step { color: var(--rose); }
-
 h2 {
   margin: 8px 0 5px;
   font-size: 36px;
