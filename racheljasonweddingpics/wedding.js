@@ -9,7 +9,6 @@
 
   const photoInput = document.getElementById('photoInput');
   const uploadStatus = document.getElementById('uploadStatus');
-  const selectionNote = document.getElementById('selectionNote');
   const keepOpenNotice = document.getElementById('keepOpenNotice');
   const fileList = document.getElementById('fileList');
 
@@ -98,7 +97,6 @@
       updateStatus(`${uploaded} photo${uploaded === 1 ? '' : 's'} saved. ${failed} could not be saved—please select those again and try once more.`, 'error');
     } else {
       updateStatus('All set—thank you for sharing these moments with us.', 'success');
-      selectionNote.textContent = 'Want to add more? Choose another set of photos.';
       keepOpenNotice.hidden = true;
     }
 
@@ -135,9 +133,6 @@
       updateStatus('Choose one or more photos to begin.');
     }
 
-    selectionNote.textContent = acceptedFiles.length
-      ? 'Your upload has started. Please keep this page open until it finishes.'
-      : 'Choose as many photos as you like. They will start uploading right away.';
     keepOpenNotice.hidden = !acceptedFiles.length;
     if (endpoint && acceptedFiles.length) uploadFiles(acceptedFiles);
   });
