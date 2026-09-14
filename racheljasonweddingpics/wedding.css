@@ -114,7 +114,7 @@ h2 {
 .upload-panel {
   position: relative;
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 215px 1fr;
   gap: 22px;
   margin-top: 24px;
   padding: 27px;
@@ -127,13 +127,21 @@ h2 {
 
 .upload-art {
   display: grid;
-  min-height: 153px;
+  min-height: 190px;
   place-items: center;
-  color: var(--sage);
+  overflow: hidden;
+  background: #e8eaeb;
   border-right: 1px solid var(--line);
 }
 
-.upload-art svg { width: 126px; }
+.upload-photo {
+  width: 100%;
+  min-height: 190px;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: 60% 52%;
+}
 
 .upload-content { align-self: center; }
 
@@ -231,8 +239,8 @@ h2 {
   .monogram { width: 67px; }
   .photo-drop { margin-top: 49px; }
   .upload-panel { grid-template-columns: 1fr; padding: 21px; }
-  .upload-art { min-height: 84px; border-right: 0; border-bottom: 1px solid var(--line); }
-  .upload-art svg { width: 102px; }
+  .upload-art { min-height: 165px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .upload-photo { min-height: 165px; object-position: 60% 52%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
