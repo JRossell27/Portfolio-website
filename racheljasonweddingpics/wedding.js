@@ -1,7 +1,8 @@
 (() => {
   const endpoint = (window.WEDDING_UPLOAD_ENDPOINT || '').trim();
   const maxFileBytes = 20 * 1024 * 1024;
-  const maxConcurrentUploads = 2;
+  const smallPhotoBytes = 6 * 1024 * 1024;
+  const mediumPhotoBytes = 10 * 1024 * 1024;
   const acceptedTypes = new Set([
     'image/jpeg', 'image/png', 'image/heic', 'image/heif', 'image/webp'
   ]);
@@ -49,12 +50,20 @@
     });
   };
 
+  const getWorkerCount = (files) => {
+    const largestFileBytes = Math.max(...files.map((file) => file.size));
+
+    if (largestFileBytes <= smallPhotoBytes) return Math.min(4, files.length);
+    if (largestFileBytes <= mediumPhotoBytes) return Math.min(3, files.length);
+    return Math.min(2, files.length);
+  };
+
   const uploadFiles = async (files) => {
     photoInput.disabled = true;
     let uploaded = 0;
     let failed = 0;
     let nextIndex = 0;
-    const workerCount = Math.min(maxConcurrentUploads, files.length);
+    const workerCount = getWorkerCount(files);
 
     const uploadOne = async () => {
       while (nextIndex < files.length) {
