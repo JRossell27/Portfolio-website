@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noimageindex">
+  <meta name="theme-color" content="#f7f1e8">
+  <title>Rachel &amp; Jason | Wedding Photos</title>
+  <meta name="description" content="A private place to share photos from Rachel and Jason's wedding.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="wedding.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="site-header">
+      <img class="monogram" src="../assets/img/rachel-jason-monogram.png" alt="Rachel and Jason monogram">
+      <p class="eyebrow">Rachel &amp; Jason</p>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <p class="kicker"><span aria-hidden="true">✦</span> Our wedding, through your eyes <span aria-hidden="true">✦</span></p>
+      <h1 id="page-title">Share the moments<br>you captured.</h1>
+      <p class="lede">We would love to see the day through your eyes. Add the photos from your phone below—no app or account needed.</p>
+    </section>
+
+    <section class="photo-drop" aria-labelledby="upload-title">
+      <div class="photo-drop-heading">
+        <p class="step">01 / PHOTO DROP</p>
+        <h2 id="upload-title">Add your photos</h2>
+        <p>Choose as many wedding photos as you like. They will be saved privately for Rachel and Jason.</p>
+      </div>
+
+      <div class="upload-panel" id="uploadPanel">
+        <div class="upload-art" aria-hidden="true">
+          <svg viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 93C24 72 38 64 55 69C70 73 77 90 91 90C108 90 114 69 131 68C142 67 151 73 158 84" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M80 104V20M80 20L66 35M80 20L94 35" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M29 29C33 18 41 13 51 14C53 24 48 34 38 39C28 35 25 33 22 29C24 28 27 28 29 29Z" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M127 27C132 17 140 14 149 17C149 27 143 34 133 36C126 31 124 29 121 25C123 24 125 25 127 27Z" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+        </div>
+
+        <div class="upload-content">
+          <label class="file-picker" for="photoInput">
+            <span class="file-picker-icon" aria-hidden="true">+</span>
+            <span class="file-picker-text">Select photos</span>
+            <span class="file-picker-note">JPG, PNG, HEIC, or WebP</span>
+          </label>
+          <input id="photoInput" type="file" accept="image/jpeg,image/png,image/heic,image/heif,image/webp" multiple>
+          <p class="selection-note" id="selectionNote">Your photos stay private.</p>
+        </div>
+
+        <div class="file-list" id="fileList" aria-live="polite"></div>
+
+        <div class="upload-actions">
+          <button class="upload-button" id="uploadButton" type="button" disabled>
+            <span>Upload photos</span>
+            <span aria-hidden="true">↗</span>
+          </button>
+          <p class="upload-status" id="uploadStatus" role="status">Choose photos to begin.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing-note" aria-label="Thank you note">
+      <p class="script">Thank you</p>
+      <p>for helping us remember every little moment.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span class="footer-rule" aria-hidden="true"></span>
+    <p>With love, Rachel &amp; Jason</p>
+  </footer>
+
+  <script src="upload-config.js"></script>
+  <script src="wedding.js"></script>
+</body>
+</html>
