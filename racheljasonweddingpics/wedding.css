@@ -162,6 +162,25 @@ h2 {
 
 .selection-note { margin: 13px 0 0; color: var(--muted); font-size: 13px; }
 
+.keep-open-notice {
+  margin: 13px 0 0;
+  padding: 10px 12px;
+  border-left: 2px solid var(--rose);
+  background: rgba(187, 132, 134, .09);
+  color: #674e50;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.keep-open-notice span {
+  margin-right: 4px;
+  color: var(--ink);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
 .file-list {
   grid-column: 1 / -1;
   display: grid;
