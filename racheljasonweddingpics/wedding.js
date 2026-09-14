@@ -36,17 +36,16 @@
   });
 
   /*
-    Apps Script accepts a normal form-encoded POST. `no-cors` keeps this public
-    upload request simple for guests while the page still waits for the network
-    request to complete before moving to the next photo.
+    Send the JSON directly instead of form-encoding it. That avoids expanding
+    the already base64-encoded photo a second time, while remaining a simple
+    public request for guests.
   */
   const postPhoto = async (payload) => {
-    const body = new URLSearchParams({ payload: JSON.stringify(payload) });
     await fetch(endpoint, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-      body
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify(payload)
     });
   };
 

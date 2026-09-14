@@ -30,7 +30,11 @@ function doPost(event) {
     if (!ACCEPT_UPLOADS) throw new Error('Photo uploads are closed.');
     if (FOLDER_ID.indexOf('PASTE_') === 0) throw new Error('The photo-drop folder has not been configured.');
 
-    const payload = JSON.parse(event.parameter.payload || '{}');
+    // New uploads send JSON directly to avoid the extra size introduced by
+    // URL-form encoding. The form parameter fallback keeps older page loads
+    // working until guests refresh their browser.
+    const rawPayload = event && event.postData && event.postData.contents;
+    const payload = JSON.parse(rawPayload || event.parameter.payload || '{}');
     const fileName = safeFileName_(payload.fileName);
     const mimeType = String(payload.mimeType || '').toLowerCase();
     const base64 = String(payload.base64 || '');
